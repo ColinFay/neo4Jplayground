@@ -127,6 +127,10 @@ or
 
 `MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Emperor" RETURN *;`
 
+### Burzum album names 
+
+`MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN r.name;`
+
 ## Count stuffs
 
 ### Recorded in 1993
