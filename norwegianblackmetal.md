@@ -137,4 +137,6 @@ or
 
 `MATCH (r:Band) -[f:IS_FROM] -> (c:City {name:"Bergen"}) RETURN COUNT(*);`
 
+### Number of Burzum albums
 
+`MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN COUNT(*);`
