@@ -285,16 +285,42 @@ MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN COU
 1 row available after 2 ms, consumed after another 0 ms
 ```
 
-### Number of albums recorded by groups from Oslo 
+### Number of albums recorded by groups from Bergen 
 
 ```
-MATCH (:record) -[:WAS_RECORDED] -> (:Band) -[:IS_FROM]-> (:City {name:"Bergen"}) RETURN COUNT(*) AS oslorecords;
+MATCH (:record) -[:WAS_RECORDED] -> (:Band) -[:IS_FROM]-> (:City {name:"Bergen"}) RETURN COUNT(*) AS bergenrecords;
 +-------------+
-| oslorecords |
+| bergenrecords |
 +-------------+
 | 11          |
 +-------------+
 
 1 row available after 3 ms, consumed after another 0 ms
+```
+
+### Albums by bands formed in 1991
+
+```
+MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.formed = 1991 RETURN *;
++-------------------------------------------------------------------------------------------------------------+
+| b                                        | r                                                                |
++-------------------------------------------------------------------------------------------------------------+
+| (:Band {name: "Burzum", formed: 1991})   | (:record {release: 1992, name: "Hvis lyset tar oss"})            |
+| (:Band {name: "Burzum", formed: 1991})   | (:record {release: 1993, name: "Filosofem"})                     |
+| (:Band {name: "Burzum", formed: 1991})   | (:record {release: 1992, name: "Det som engang var"})            |
+| (:Band {name: "Burzum", formed: 1991})   | (:record {release: 1992, name: "Aske"})                          |
+| (:Band {name: "Burzum", formed: 1991})   | (:record {release: 1991, name: "Demo I"})                        |
+| (:Band {name: "Burzum", formed: 1991})   | (:record {release: 1992, name: "Burzum"})                        |
+| (:Band {name: "Burzum", formed: 1991})   | (:record {release: 1991, name: "Demo I"})                        |
+| (:Band {name: "Enslaved", formed: 1991}) | (:record {release: 1993, name: "Vikingligr Veldi"})              |
+| (:Band {name: "Enslaved", formed: 1991}) | (:record {release: 1992, name: "Hordanes Land"})                 |
+| (:Band {name: "Enslaved", formed: 1991}) | (:record {release: 1992, name: "Yggdrasill"})                    |
+| (:Band {name: "Enslaved", formed: 1991}) | (:record {release: 1991, name: "Nema"})                          |
+| (:Band {name: "Immortal", formed: 1991}) | (:record {release: 1993, name: "Pure Holocaust"})                |
+| (:Band {name: "Immortal", formed: 1991}) | (:record {release: 1992, name: "Diabolical Fullmoon Mysticism"}) |
+| (:Band {name: "Immortal", formed: 1991}) | (:record {release: 1991, name: "Immortal"})                      |
++-------------------------------------------------------------------------------------------------------------+
+
+14 rows available after 1 ms, consumed after another 1 ms
 ```
 
