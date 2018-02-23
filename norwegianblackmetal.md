@@ -288,6 +288,7 @@ MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN COU
 ### Number of albums recorded by groups from Oslo 
 
 ```
+MATCH (:record) -[:WAS_RECORDED] -> (:Band) -[:IS_FROM]-> (:City {name:"Bergen"}) RETURN COUNT(*) AS oslorecords;
 +-------------+
 | oslorecords |
 +-------------+
@@ -296,3 +297,4 @@ MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN COU
 
 1 row available after 3 ms, consumed after another 0 ms
 ```
+
