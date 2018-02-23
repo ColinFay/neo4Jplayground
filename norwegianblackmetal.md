@@ -1,10 +1,10 @@
 ## 90's norwegian black metal bands as a Neo4J graph
 
-<http://console.neo4j.org/?id=n34a2j>
-
 ```
 CREATE
 // bands
+(ancient:Band {name: 'Ancient', formed: 1992}),
+(acturus:Band {name: 'Arcturus', formed: 1991}),
 (burzum:Band {name: 'Burzum', formed: 1991}),
 (carpathianforest:Band {name: 'Carpathian Forest', formed: 1990}),
 (darkthrone:Band {name: 'Darkthrone', formed: 1986}),
@@ -55,8 +55,20 @@ CREATE
 (darkmed:record {name: 'Dark Medieval Times', release: 1993}),
 (pureho:record {name: 'Pure Holocaust', release: 1993}),
 (trans:record {name: 'Transilvanian Hunger', release: 1993}),
+//people
+(euronymous:artist {name: 'Euronymous', born: 1968}),
+(vikernes:artist {name: 'Vikernes', born: 1973}),
+(fenriz:artist {name: 'Fenriz', born: 1971}),
+(gaahl:artist {name: 'Gaahl', born: 1975}),
 // links
+// played in
+(euronymous)-[:PLAYED_IN]->(mayhem),
+(vikernes)-[:PLAYED_IN]->(burzum),
+(fenriz)-[:PLAYED_IN]->(Darkthrone),
+(gaahl)-[:PLAYED_IN]->(gorgoroth),
 // IS_FROM
+(ancient)-[:IS_FROM]->(bergen),
+(acturus)-[:IS_FROM]->(oslo),
 (burzum)-[:IS_FROM]->(bergen),
 (carpathianforest)-[:IS_FROM]->(rogaland),
 (emperor)-[:IS_FROM]->(sandnes),
@@ -107,42 +119,180 @@ CREATE
 
 ### formed in 1990 
 
-`MATCH (b:Band) WHERE b.formed = 1990 RETURN *;` 
+```
+MATCH (b:Band) WHERE b.formed = 1990 RETURN *;
++---------------------------------------------------+
+| b                                                 |
++---------------------------------------------------+
+| (:Band {name: "Carpathian Forest", formed: 1990}) |
++---------------------------------------------------+
+
+1 row available after 16 ms, consumed after another 3 ms
+``` 
 
 or
 
-`MATCH (b:Band {formed: 1990}) RETURN *;` 
+```
+MATCH (b:Band {formed: 1990}) RETURN *;
++---------------------------------------------------+
+| b                                                 |
++---------------------------------------------------+
+| (:Band {name: "Carpathian Forest", formed: 1990}) |
++---------------------------------------------------+
+
+1 row available after 10 ms, consumed after another 0 ms
+``` 
 
 ### formed before 1995
 
-`MATCH (b:Band) WHERE b.formed < 1995 RETURN *;`
+```
+MATCH (b:Band) WHERE b.formed < 1995 RETURN *;
++---------------------------------------------------+
+| b                                                 |
++---------------------------------------------------+
+| (:Band {name: "Ancient", formed: 1992})           |
+| (:Band {name: "Arcturus", formed: 1991})          |
+| (:Band {name: "Burzum", formed: 1991})            |
+| (:Band {name: "Carpathian Forest", formed: 1990}) |
+| (:Band {name: "Darkthrone", formed: 1986})        |
+| (:Band {name: "Emperor", formed: 1986})           |
+| (:Band {name: "Enslaved", formed: 1991})          |
+| (:Band {name: "Gorgoroth", formed: 1992})         |
+| (:Band {name: "Hades", formed: 1992})             |
+| (:Band {name: "Immortal", formed: 1991})          |
+| (:Band {name: "Mayhem", formed: 1984})            |
+| (:Band {name: "Satyricon", formed: 1984})         |
+| (:Band {name: "Taake", formed: 1993})             |
++---------------------------------------------------+
+
+13 rows available after 1 ms, consumed after another 2 ms
+```
 
 ### From Oslo
 
-`MATCH (r:Band) -[f:IS_FROM] -> (c:City {name:"Oslo"}) RETURN *;`
+```
+MATCH (r:Band) -[f:IS_FROM] -> (c:City {name:"Oslo"}) RETURN *;
++---------------------------------------------------------------------------------+
+| c                      | f          | r                                         |
++---------------------------------------------------------------------------------+
+| (:City {name: "Oslo"}) | [:IS_FROM] | (:Band {name: "Satyricon", formed: 1984}) |
+| (:City {name: "Oslo"}) | [:IS_FROM] | (:Band {name: "Mayhem", formed: 1984})    |
+| (:City {name: "Oslo"}) | [:IS_FROM] | (:Band {name: "Arcturus", formed: 1991})  |
++---------------------------------------------------------------------------------+
+
+3 rows available after 1 ms, consumed after another 2 ms
+```
 
 ### Demo albums 
 
-`MATCH (r:record) WHERE r.name CONTAINS "Demo" RETURN *;`
+```
+MATCH (r:record) WHERE r.name CONTAINS "Demo" RETURN *;
++-------------------------------------------+
+| r                                         |
++-------------------------------------------+
+| (:record {release: 1991, name: "Demo I"}) |
+| (:record {release: 1991, name: "Demo I"}) |
++-------------------------------------------+
+
+2 rows available after 25 ms, consumed after another 3 ms
+```
 
 ### Emperor albums
 
-`MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Emperor" RETURN *;`
+```
+MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Emperor" RETURN b, r;
++-------------------------------------------------------------------------------------------------------+
+| b                                       | r                                                           |
++-------------------------------------------------------------------------------------------------------+
+| (:Band {name: "Emperor", formed: 1986}) | (:record {release: 1992, name: "Emperor"})                  |
+| (:Band {name: "Emperor", formed: 1986}) | (:record {release: 1993, name: "In the Nightside Eclipse"}) |
+| (:Band {name: "Emperor", formed: 1986}) | (:record {release: 1992, name: "As the Shadows Rise"})      |
+| (:Band {name: "Emperor", formed: 1986}) | (:record {release: 1992, name: "Wrath of the Tyrant"})      |
++-------------------------------------------------------------------------------------------------------+
+
+```
 
 ### Burzum album names 
 
-`MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN r.name;`
+```
+MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN r.name AS albums;
++----------------------+
+| albums               |
++----------------------+
+| "Hvis lyset tar oss" |
+| "Filosofem"          |
+| "Det som engang var" |
+| "Aske"               |
+| "Demo I"             |
+| "Burzum"             |
+| "Demo I"             |
++----------------------+
+
+7 rows available after 16 ms, consumed after another 1 ms
+```
 
 ## Count stuffs
 
 ### Recorded in 1993
 
-`MATCH (r:record) WHERE r.release = 1993 RETURN COUNT(*);`
+```
+MATCH (r:record) WHERE r.release = 1993 RETURN COUNT(*) AS how_much;
++----------+
+| how_much |
++----------+
+| 10       |
++----------+
+
+1 row available after 12 ms, consumed after another 0 ms
+```
 
 ### Bands from Bergen
 
-`MATCH (r:Band) -[f:IS_FROM] -> (c:City {name:"Bergen"}) RETURN COUNT(*);`
+```
+MATCH (r:Band) -[f:IS_FROM] -> (c:City {name:"Bergen"}) RETURN COUNT(*) AS Bergen_band;
++----------+
+| COUNT(*) |
++----------+
+| 6        |
++----------+
+
+1 row available after 40 ms, consumed after another 1 ms
+```
 
 ### Number of Burzum albums
 
-`MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN COUNT(*);`
+```
+MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN COUNT(*) ;
++----------+
+| COUNT(*) |
++----------+
+| 7        |
++----------+
+
+1 row available after 4 ms, consumed after another 0 ms
+```
+
+With a named column 
+
+```
+MATCH (r:record) -[:WAS_RECORDED] -> (b:Band) where b.name = "Burzum" RETURN COUNT(*) AS burzumcount;
++-------------+
+| burzumcount |
++-------------+
+| 7           |
++-------------+
+
+1 row available after 2 ms, consumed after another 0 ms
+```
+
+### Number of albums recorded by groups from Oslo 
+
+```
++-------------+
+| oslorecords |
++-------------+
+| 11          |
++-------------+
+
+1 row available after 3 ms, consumed after another 0 ms
+```
