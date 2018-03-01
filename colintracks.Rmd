@@ -1,0 +1,54 @@
+---
+title: "Load"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+# Note : be sure to have a Neo4J connection running 
+rmd4j::set_neo4J_engine(cypher_bin = "/Users/colin/neo4j/bin/cypher-shell"# Insert the path to your cypher bin here
+                        # Uncomment these lines if needed
+                        #neo4j_user = "neo4j", 
+                        #neo4j_passwd = "neo4j", 
+                        #neo4j_adress = "bolt://localhost:7687"
+                        #neo4j_format = "plain"
+                        )
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{neo4j}
+LOAD CSV WITH HEADERS FROM "https://raw.githubusercontent.com/ThinkR-open/datasets/master/tracks.csv" AS csvLine
+CREATE (t:artist { name: csvLine.artist, album: csvLine.album_name, track: csvLine.track, duration: toInteger(csvLine.duration), expl: toBoolean(csvLine.explicit), pop: csvLine.popularity});
+```
+
+### How many Thy Art is Murder songs ? 
+
+```{neo4j}
+MATCH (a:artist) WHERE a.name = "Thy Art Is Murder" RETURN COUNT(*);
+```
+
+Which one?
+
+```{neo4j}
+MATCH (a:artist) WHERE a.name = "Thy Art Is Murder" RETURN a.track AS nom;
+```
+
+### Average duration
+
+```{neo4j}
+MATCH (a:artist) RETURN AVG(a.duration);
+```
+
+### Names of Emperor songs
+
+```{neo4j}
+MATCH (a:artist {name: "Emperor"}) RETURN a.track AS emperor_tracks;
+```
+
+### Max duration
+
+```{neo4j}
+MATCH (a:artist) RETURN MAX(a.duration);
+```
+
+
