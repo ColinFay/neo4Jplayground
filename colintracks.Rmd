@@ -4,7 +4,7 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-rmd4j::set_neo4J_engine(cypher_bin = "/Users/colin/neo4j/bin/cypher-shell")
+rmd4j::set_neo4j_engine(cypher_bin = "/Users/colin/neo4j/bin/cypher-shell")
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
